@@ -1,5 +1,5 @@
 require 'rake'
-require 'rspec/core/rake_task'
+
 
 
 require ::File.expand_path('../config/environment', __FILE__)
@@ -57,32 +57,6 @@ namespace :generate do
     end
   end
 
-  desc "Create an empty model spec in spec, e.g., rake generate:spec NAME=user"
-  task :spec do
-    unless ENV.has_key?('NAME')
-      raise "Must specificy migration name, e.g., rake generate:spec NAME=user"
-    end
-
-    name     = ENV['NAME'].camelize
-    filename = "%s_spec.rb" % ENV['NAME'].underscore
-    path     = APP_ROOT.join('spec', filename)
-
-    if File.exist?(path)
-      raise "ERROR: File '#{path}' already exists"
-    end
-
-    puts "Creating #{path}"
-    File.open(path, 'w+') do |f|
-      f.write(<<-EOF.strip_heredoc)
-        require 'spec_helper'
-
-        describe #{name} do
-          pending "add some examples to (or delete) #{__FILE__}"
-        end
-      EOF
-    end
-  end
-
 end
 
 namespace :db do
@@ -120,20 +94,6 @@ namespace :db do
     puts "Current version: #{ActiveRecord::Migrator.current_version}"
   end
 
-  desc "rollback your migration--use STEPS=number to step back multiple times"
-  task :rollback do
-    steps = (ENV['STEPS'] || 1).to_i
-    ActiveRecord::Migrator.rollback('db/migrate', steps)
-    Rake::Task['db:version'].invoke if Rake::Task['db:version']
-  end
-
-  namespace :test do
-    desc "Migrate test database"
-    task :prepare do
-      system "rake db:migrate RACK_ENV=test"
-      system "rake db:seed RACK_ENV=test"
-    end
-  end
 end
 
 desc 'Start IRB with application environment loaded'
@@ -141,7 +101,3 @@ task "console" do
   exec "irb -r./config/environment"
 end
 
-desc "Run the specs"
-RSpec::Core::RakeTask.new(:spec)
-
-task :default  => :spec

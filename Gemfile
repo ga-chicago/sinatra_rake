@@ -8,7 +8,7 @@ gem 'pg'
 gem 'sinatra'
 gem 'sinatra-contrib'
 
-# Use Thin for our web server
+
 
 
 gem 'activesupport', '~>4.1'
